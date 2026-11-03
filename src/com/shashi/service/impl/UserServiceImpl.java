@@ -138,13 +138,14 @@ public class UserServiceImpl implements UserService {
 			ps.setString(4, customer.getLName());
 			ps.setString(5, customer.getAddr());
 			ps.setLong(6, customer.getPhNo());
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
+			int response = ps.executeUpdate();
+			if (response > 0) {
 				responseCode = ResponseCode.SUCCESS.toString();
 			}
 			ps.close();
 		} catch (SQLException | TrainException e) {
-			if (e.getMessage().toUpperCase().contains("ORA-00001")) {
+			String msg = e.getMessage() != null ? e.getMessage().toUpperCase() : "";
+			if (msg.contains("ORA-00001") || msg.contains("PRIMARY KEY") || msg.contains("UNIQUE")) {
 				responseCode += " : " + "User With Id: " + customer.getMailId() + " is already registered ";
 			} else {
 				responseCode += " : " + e.getMessage();
